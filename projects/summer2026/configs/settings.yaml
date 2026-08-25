@@ -1,0 +1,31 @@
+census_key: CENSUS_KEY
+data_dir: data
+output_dir: output
+county_ids: [53033, 53035, 53053, 53061]
+county_map:
+  King County: 53033
+  Kitsap County: 53035
+  Pierce County: 53053
+  Snohomish County: 53061
+state_id: 53
+
+gq_rates_year: 2020
+headship_rates_year: 2000
+vacancy_rates_year: 2020
+
+data:
+  ofm_population_estimates: ofm_pop_sade_county_2020_2025.xlsx
+  ofm_housing_estimates: ofm_april1_housing.xlsx
+
+remi_forecast_dir: J:/Projects/Forecasts/_Regional/2026/REMI
+remi_forecast: REMI_v3.4_base_adj_to_OFM.xlsx
+forecast_year: 2060
+
+steps:
+  - housing_need.steps.clean_ofm_estimates
+  # - housing_need.steps.download_decennial_data
+  # - housing_need.steps.calculate_gq_rates
+  # - housing_need.steps.calculate_headship_rates
+  # - housing_need.steps.calculate_vacancy_rates
+  # - housing_need.steps.clean_remi_forecast
+  - housing_need.steps.calculate_housing_need
