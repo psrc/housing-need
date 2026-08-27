@@ -9,6 +9,9 @@ county_map:
   Snohomish County: 53061
 state_id: 53
 
+pums_type: 1-Year
+pums_year: 2024
+
 gq_rates_year: 2020
 headship_rates_year: 2000
 vacancy_rates_year: 2020
@@ -22,10 +25,12 @@ remi_forecast: REMI_v3.4_base_adj_to_OFM.xlsx
 forecast_year: 2060
 
 steps:
-  - housing_need.steps.clean_ofm_estimates
+  # - housing_need.steps.clean_ofm_estimates
   # - housing_need.steps.download_decennial_data
   # - housing_need.steps.calculate_gq_rates
   # - housing_need.steps.calculate_headship_rates
   # - housing_need.steps.calculate_vacancy_rates
   # - housing_need.steps.clean_remi_forecast
-  - housing_need.steps.calculate_housing_need
+  # - housing_need.steps.pums_download
+  - housing_need.steps.puma_county_lookup
+  # - housing_need.steps.calculate_housing_need

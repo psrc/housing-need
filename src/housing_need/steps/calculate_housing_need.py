@@ -123,7 +123,7 @@ def run_step(context):
 
     output_path = Path(context["output_dir"]) / "housing_need.xlsx"
     with pd.ExcelWriter(output_path) as writer:
-        housing_need.rename(columns=ESTIMATED_COLUMN_LABELS).to_excel(writer, sheet_name="data", index=False)
         summary.to_excel(writer, sheet_name="summary", index=False)
+        housing_need.rename(columns=ESTIMATED_COLUMN_LABELS).to_excel(writer, sheet_name="data", index=False)
 
     return context
