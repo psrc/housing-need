@@ -32,5 +32,6 @@ steps:
   # - housing_need.steps.calculate_vacancy_rates
   # - housing_need.steps.clean_remi_forecast
   # - housing_need.steps.pums_download
-  - housing_need.steps.puma_county_lookup
+  # - housing_need.steps.puma_county_lookup
+  - housing_need.steps.calculate_non_k12_doubled_up
   # - housing_need.steps.calculate_housing_need
