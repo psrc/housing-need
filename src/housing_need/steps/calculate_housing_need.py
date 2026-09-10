@@ -163,7 +163,7 @@ def run_step(context):
 
     # ofm_pop_estimates.csv holds a single year of population (context['ofm_year']) with no year column.
     ofm_pop = pd.read_csv(intermediate_dir / "ofm_pop_estimates.csv")
-    ofm_pop["year"] = context["ofm_pop_estimates_year"]
+    ofm_pop["year"] = context["ofm_year"]
 
     remi_pop = pd.read_csv(intermediate_dir / "remi_forecast.csv")
     forecast_pop = remi_pop[remi_pop["year"] == context["forecast_year"]]
@@ -174,8 +174,14 @@ def run_step(context):
     ofm_housing = pd.read_csv(intermediate_dir / "ofm_housing_estimates.csv").rename(
         columns={"total_housing_units": "ofm_current_housing_units"}
     )
+
+    try:
+        ofm_year = context["ofm_year"]
+    except KeyError:
+        raise ValueError("OFM year not found in context. Ensure 'clean_ofm_estimates' step has been run.")
+
     summary = calculate_summary(
-        housing_need, ofm_housing, context["ofm_pop_estimates_year"], context["forecast_year"],
+        housing_need, ofm_housing, ofm_year, context["forecast_year"],
         context["county_map"], homelessness_need,
     )
 

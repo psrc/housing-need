@@ -28,10 +28,8 @@ remi_forecast_dir: J:/Projects/Forecasts/_Regional/2026/REMI
 remi_forecast: REMI_v3.4_base_adj_to_OFM.xlsx
 forecast_year: 2060
 
-ofm_pop_estimates_year: 2025
-
 steps:
-  # - housing_need.steps.clean_ofm_estimates
+  - housing_need.steps.clean_ofm_estimates
   # - housing_need.steps.download_decennial_data
   # - housing_need.steps.calculate_gq_rates
   # - housing_need.steps.calculate_headship_rates
