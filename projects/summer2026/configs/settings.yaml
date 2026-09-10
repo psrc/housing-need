@@ -19,10 +19,16 @@ vacancy_rates_year: 2020
 data:
   ofm_population_estimates: ofm_pop_sade_county_2020_2025.xlsx
   ofm_housing_estimates: ofm_april1_housing.xlsx
+  current_homelessness_counts: PIT2026.csv
+  homeless_families_counts: PIT2024_CoC.csv
+  school_districts: school_districts.csv
+  mvs_data: MVS_data_WA.csv
 
 remi_forecast_dir: J:/Projects/Forecasts/_Regional/2026/REMI
 remi_forecast: REMI_v3.4_base_adj_to_OFM.xlsx
 forecast_year: 2060
+
+ofm_pop_estimates_year: 2025
 
 steps:
   # - housing_need.steps.clean_ofm_estimates
@@ -34,4 +40,7 @@ steps:
   # - housing_need.steps.pums_download
   # - housing_need.steps.puma_county_lookup
   - housing_need.steps.calculate_non_k12_doubled_up
-  # - housing_need.steps.calculate_housing_need
+  - housing_need.steps.calculate_k12_doubled_up
+  - housing_need.steps.calculate_hh_from_pit
+  - housing_need.steps.sum_need_from_homelessness
+  - housing_need.steps.calculate_housing_need

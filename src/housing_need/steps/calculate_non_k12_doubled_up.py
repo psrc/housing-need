@@ -30,6 +30,5 @@ def run_step(context):
     # Calculate the number of non-K12 doubled-up households
     non_k12_doubled_up = calculate_non_k12_doubled_up(households, persons)
     # Store the result in the context dictionary
-    print('Non-K12 doubled-up households:', non_k12_doubled_up)
     context['non_k12_doubled_up'] = non_k12_doubled_up
     return context
