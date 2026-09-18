@@ -15,6 +15,7 @@ pums_year: 2024
 gq_rates_year: 2020
 headship_rates_year: 2000
 vacancy_rates_year: 2020
+most_recent_decennial_year: 2020
 
 data:
   ofm_population_estimates: ofm_pop_sade_county_2020_2025.xlsx
@@ -29,7 +30,7 @@ remi_forecast: REMI_v3.4_base_adj_to_OFM.xlsx
 forecast_year: 2060
 
 steps:
-  - housing_need.steps.clean_ofm_estimates
+  - housing_need.steps.clean_ofm_estimates # leave this step on to populate context['ofm_year']
   # - housing_need.steps.download_decennial_data
   # - housing_need.steps.calculate_gq_rates
   # - housing_need.steps.calculate_headship_rates
@@ -37,8 +38,10 @@ steps:
   # - housing_need.steps.clean_remi_forecast
   # - housing_need.steps.pums_download
   # - housing_need.steps.puma_county_lookup
-  - housing_need.steps.calculate_non_k12_doubled_up
-  - housing_need.steps.calculate_k12_doubled_up
-  - housing_need.steps.calculate_hh_from_pit
-  - housing_need.steps.sum_need_from_homelessness
-  - housing_need.steps.calculate_housing_need
+  # - housing_need.steps.calculate_non_k12_doubled_up
+  # - housing_need.steps.calculate_k12_doubled_up
+  # - housing_need.steps.calculate_hh_from_pit
+  # - housing_need.steps.sum_need_from_homelessness
+  # - housing_need.steps.split_future_need_components
+  - housing_need.steps.calculate_hist_hhsz
+  # - housing_need.steps.calculate_housing_need

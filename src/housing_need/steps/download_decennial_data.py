@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 from pathlib import Path
 
 from housing_need.util import CensusApi, YEAR_CONFIG, GQ_YEAR_CONFIG, VACANCY_YEAR_CONFIG
@@ -88,6 +89,10 @@ def run_step(context):
     headship_inputs = download_headship_inputs(
         census_api, context['headship_rates_year'], county_ids, state_id
     )
+    headship_inputs_recent = download_headship_inputs(
+        census_api, context['most_recent_decennial_year'], county_ids, state_id
+    )
+    headship_inputs = pd.concat([headship_inputs, headship_inputs_recent], ignore_index=True)
     headship_inputs.to_csv(intermediate_dir / "headship_rate_inputs.csv", index=False)
 
     vacancy_inputs = download_vacancy_inputs(

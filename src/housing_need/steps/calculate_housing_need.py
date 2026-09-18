@@ -37,9 +37,11 @@ def calculate_hhpop(pop, gq_rates):
     return pop
 
 
-def calculate_hh(pop, headship_rates):
-    """Apply headship rates to household population to estimate households, by age group."""
-    rates = headship_rates[["county_id", "age_group", "headship_rate"]]
+def calculate_hh(pop, headship_rates, headship_rates_year):
+    """Apply headship rates for the given year to household population to estimate households, by age group."""
+    rates = headship_rates.loc[
+        headship_rates["year"] == headship_rates_year, ["county_id", "age_group", "headship_rate"]
+    ]
     pop = pop.merge(rates, on=["county_id", "age_group"], how="left")
     pop["headship_rate"] = pop["headship_rate"].fillna(0)
     pop["hh"] = pop["hhpop"] * pop["headship_rate"]
@@ -55,11 +57,11 @@ def calculate_housing_units(pop, vacancy_rates):
     return pop.drop(columns="vacancy_rate")
 
 
-def calculate_housing_need(pop, gq_rates, headship_rates, vacancy_rates):
+def calculate_housing_need(pop, gq_rates, headship_rates, headship_rates_year, vacancy_rates):
     """Chain group-quarters, headship, and vacancy calculations into a single housing-need
     table, keeping the county and age group disaggregations."""
     pop = calculate_hhpop(pop, gq_rates)
-    pop = calculate_hh(pop, headship_rates)
+    pop = calculate_hh(pop, headship_rates, headship_rates_year)
     pop = calculate_housing_units(pop, vacancy_rates)
     cols = [
         "county_id", "year", "age_group",
@@ -69,7 +71,17 @@ def calculate_housing_need(pop, gq_rates, headship_rates, vacancy_rates):
     return pop[cols].sort_values(["year", "county_id", "age_group"]).reset_index(drop=True)
 
 
-def calculate_summary(housing_need, ofm_housing, ofm_year, forecast_year, county_map, homelessness_need):
+def build_components(non_demographic_need, non_demographic_mrd_hr_need, demographic_need):
+    """Combine the county/age-group need components into one table, one column per component."""
+    components = non_demographic_need.merge(
+        non_demographic_mrd_hr_need, on=["county_id", "age_group"], how="outer"
+    ).merge(demographic_need, on=["county_id", "age_group"], how="outer")
+    return components.sort_values(["county_id", "age_group"]).reset_index(drop=True)
+
+
+def calculate_summary(
+    housing_need, ofm_housing, ofm_year, forecast_year, county_map, homelessness_need,
+):
     """Reduce the age-group/year detail to one row per county (plus a regional total), with
     the OFM current housing units, resulting shortage, and total housing need for each year
     as separate columns. Homelessness housing need is only estimated at the regional level,
@@ -169,7 +181,7 @@ def run_step(context):
     forecast_pop = remi_pop[remi_pop["year"] == context["forecast_year"]]
 
     pop = pd.concat([ofm_pop, forecast_pop], ignore_index=True)
-    housing_need = calculate_housing_need(pop, gq_rates, headship_rates, vacancy_rates)
+    housing_need = calculate_housing_need(pop, gq_rates, headship_rates, context["headship_rates_year"], vacancy_rates)
 
     ofm_housing = pd.read_csv(intermediate_dir / "ofm_housing_estimates.csv").rename(
         columns={"total_housing_units": "ofm_current_housing_units"}
@@ -180,9 +192,20 @@ def run_step(context):
     except KeyError:
         raise ValueError("OFM year not found in context. Ensure 'clean_ofm_estimates' step has been run.")
 
+    non_demographic_housing_need = pd.read_csv(intermediate_dir / "non_demographic_housing_need.csv")
+    mrd_hr_rates_col = f"non_demographic_{context['most_recent_decennial_year']}_hr_rates"
+    non_demographic_mrd_hr_rates = pd.read_csv(intermediate_dir / f"{mrd_hr_rates_col}.csv")
+    non_demographic_mrd_hr_need = non_demographic_mrd_hr_rates.rename(
+        columns={mrd_hr_rates_col: "non_demographic_mrd_hr_need"}
+    )
+    demographic_housing_need = pd.read_csv(intermediate_dir / f"demographic_housing_need_{context['most_recent_decennial_year']}_hr_rates.csv")
+
     summary = calculate_summary(
         housing_need, ofm_housing, ofm_year, context["forecast_year"],
         context["county_map"], homelessness_need,
+    )
+    components = build_components(
+        non_demographic_housing_need, non_demographic_mrd_hr_need, demographic_housing_need
     )
 
     output_path = Path(context["output_dir"]) / "housing_need.xlsx"
@@ -190,6 +213,7 @@ def run_step(context):
         summary.to_excel(writer, sheet_name="summary", index=False)
         housing_need.rename(columns=ESTIMATED_COLUMN_LABELS).to_excel(writer, sheet_name="data", index=False)
         homelessness_summary.to_excel(writer, sheet_name="homelessness", index=False)
+        components.to_excel(writer, sheet_name="components", index=False)
 
     print("Housing need calculation complete. Summary saved to", output_path)
     return context
