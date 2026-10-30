@@ -24,6 +24,7 @@ data:
   homeless_families_counts: PIT2024_CoC.csv
   school_districts: school_districts.csv
   mvs_data: MVS_data_WA.csv
+  hud_chas: Renter_Cost_Burden_HUD_CHAS_2022.xlsx
 
 remi_forecast_dir: J:/Projects/Forecasts/_Regional/2026/REMI
 remi_forecast: REMI_v3.4_base_adj_to_OFM.xlsx
@@ -45,3 +46,4 @@ steps:
   # - housing_need.steps.split_future_need_components
   - housing_need.steps.calculate_hist_hhsz
   # - housing_need.steps.calculate_housing_need
+  - housing_need.steps.split_need_AMI
