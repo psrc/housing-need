@@ -25,6 +25,8 @@ data:
   school_districts: school_districts.csv
   mvs_data: MVS_data_WA.csv
   hud_chas: Renter_Cost_Burden_HUD_CHAS_2022.xlsx
+  hud_chas_t18c: CHAS_2022_Table18C_county.csv
+  hud_income_limits: Section8-FY24.xlsx
 
 remi_forecast_dir: J:/Projects/Forecasts/_Regional/2026/REMI
 remi_forecast: REMI_v3.4_base_adj_to_OFM.xlsx
