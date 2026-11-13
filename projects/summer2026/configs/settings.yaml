@@ -32,6 +32,25 @@ remi_forecast_dir: J:/Projects/Forecasts/_Regional/2026/REMI
 remi_forecast: REMI_v3.4_base_adj_to_OFM.xlsx
 forecast_year: 2060
 
+split_need_ami:
+  income_levels: ['0-30%', '>30-50%', '>50-80%', '>80-100%', '>100-120%', '>120%']
+  cost_burden_build_years: 25 # share of cost-burden need built each year is 1/this
+  homeless_income_split: # share of homeless households needing housing at each income level
+    '0-30%': 0.9
+    '>30-50%': 0.1
+  moderate_income_upper_ami: 1.2 # top of the second-highest income level, as a ratio of AMI
+  hud_income_limits_year: 2024 # matches the dollar year of the PUMS incomes
+  hamfi_size_factors: # HUD household-size adjustment to the 4-person median family income
+    1: 0.70
+    2: 0.80
+    3: 0.90
+    4: 1.00
+    5: 1.08
+    6: 1.16
+    7: 1.24
+    8: 1.32
+  output_file: housing_need_by_income.xlsx
+
 steps:
   - housing_need.steps.clean_ofm_estimates # leave this step on to populate context['ofm_year']
   # - housing_need.steps.download_decennial_data
@@ -48,4 +67,4 @@ steps:
   # - housing_need.steps.split_future_need_components
   - housing_need.steps.calculate_hist_hhsz
   # - housing_need.steps.calculate_housing_need
-  - housing_need.steps.split_need_AMI
+  - housing_need.steps.split_future_need_AMI
