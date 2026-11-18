@@ -168,12 +168,13 @@ def allocate_homelessness(homeless_total, ofm_units, income_split):
 def calculate_growth_component(counties, cost_burden_need, homeless):
     """Additional housing for population growth: total net new need less the two baseline components.
 
+    The forecast housing need excludes homelessness, so the homeless need is added to the total net new need.
     If baseline needs exceed the total, the total is raised to match and growth is zero."""
     result = pd.DataFrame({
-        'total_net_new': counties['housing_need_forecast'] - counties['ofm_units'],
         'cost_burden_prod': cost_burden_need.groupby('county_id')['new_production'].sum(),
         'homeless': homeless,
     })
+    result.insert(0, 'total_net_new', counties['housing_need_forecast'] - counties['ofm_units'] + homeless)
     result['growth'] = (
         result['total_net_new'] - result['cost_burden_prod'] - result['homeless']
     ).clip(lower=0)
@@ -378,7 +379,7 @@ def run_step(context):
         output_dir / 'housing_need.xlsx', county_map, context['ofm_year'], context['forecast_year']
     )
     homeless = allocate_homelessness(homeless_total, counties['ofm_units'], income_split)
-    growth = calculate_growth_component(counties, cost_burden_need, homeless[list(income_split)].sum(axis=1))
+    growth = calculate_growth_component(counties, cost_burden_need, homeless['hh_homeless'])
 
     # Exhibit 24
     median_income = load_county_median_income(

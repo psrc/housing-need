@@ -65,6 +65,6 @@ steps:
   # - housing_need.steps.calculate_hh_from_pit
   # - housing_need.steps.sum_need_from_homelessness
   # - housing_need.steps.split_future_need_components
-  - housing_need.steps.calculate_hist_hhsz
+  # - housing_need.steps.calculate_hist_hhsz
   # - housing_need.steps.calculate_housing_need
   - housing_need.steps.split_future_need_AMI
